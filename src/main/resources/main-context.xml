@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:task="http://www.springframework.org/schema/task"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+    <bean id="dispalyData" class="exercise.cca.data.display.impl.cmd.DispalyDataOnCmd">
+        <property name="data" ref="data" />
+        <property name="theExchangeRateData" ref="theExchangeRateData" />
+    </bean>
+
+    <!-- scheduling infrastructure pool-size="10" -->
+    <task:scheduler id="scheduler" />
+        
+    <!-- xml scheduling -->
+    <task:scheduled-tasks scheduler="scheduler">
+        <task:scheduled ref="dispalyData" method="displayData" fixed-delay="60000" />
+    </task:scheduled-tasks>
+
+    <bean id="data" class="exercise.cca.data.container.impl.map.DataContainerMap">
+    </bean>
+
+    <bean id="theExchangeRateData" class="exercise.cca.data.container.impl.map.DataContainerMap">
+    </bean>
+
+    <bean id="theExchangeRateDataReader" class="exercise.cca.data.read.impl.reader.ReaderLoader">
+        <property name="data" ref="theExchangeRateData" />
+    </bean>
+
+    <bean id="inputValidator" class="exercise.cca.input.valid.impl.by.string.InputValidator">
+        <property name="pattern" value="quit" />
+    </bean>
+
+    <bean id="reader" class="exercise.cca.data.read.impl.reader.ReaderLoader">
+        <property name="data" ref="data" />
+        <property name="inputValidator" ref="inputValidator" />
+    </bean>
+
+    <bean id="loadDataFromFile" class="exercise.cca.data.read.impl.file.LoadDataFromFile">
+        <property name="readerLoader" ref="reader" />
+        <property name="filePath" value="CurrencyData.File" />
+    </bean>
+
+    <bean id="loadTheExchangeRateDataFromFile" class="exercise.cca.data.read.impl.file.LoadDataFromFile">
+        <property name="readerLoader" ref="theExchangeRateDataReader" />
+        <property name="filePath" value="TheExchangeRateData.File" />
+    </bean>
+
+    <bean id="loadDataFromSystemIn" class="exercise.cca.data.read.impl.system.in.SystemIn">
+        <property name="readerLoader" ref="reader" />
+    </bean>
+
+</beans>

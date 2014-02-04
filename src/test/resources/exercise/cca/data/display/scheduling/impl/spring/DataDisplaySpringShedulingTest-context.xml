@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+	<bean id="xmlCountDownLatch" class="java.util.concurrent.CountDownLatch">
+		<constructor-arg value="2" />
+	</bean>
+
+	<!-- scheduling infrastructure pool-size="10" -->
+	<task:scheduler id="scheduler" />
+		
+	<!-- xml scheduling -->
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="dispalyData" method="displayData" fixed-delay="60000" />
+	</task:scheduled-tasks>
+
+	<bean id="dispalyData" class="exercise.cca.data.display.impl.cmd.DispalyDataOnCmd">
+		<property name="data" ref="data" />
+		<property name="theExchangeRateData" ref="theExchangeRateData" />
+	</bean>
+
+	<bean id="data" class="exercise.cca.data.container.impl.map.DataContainerMap">
+	</bean>
+
+	<bean id="theExchangeRateData" class="exercise.cca.data.container.impl.map.DataContainerMap">
+	</bean>
+</beans>
